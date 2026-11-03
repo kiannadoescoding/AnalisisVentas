@@ -1,11 +1,17 @@
+from pprint import pprint
+
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 from datetime import datetime
+import locale
+
 from pathlib import Path
 
 ruta_csv = Path(__file__).parent/"datos"/"ventas.csv"
 ruta_parquet = Path(__file__).parent/"datos"/"consultas.parquet"
+
+locale.setlocale(locale.LC_NUMERIC, "es_ES")
 
 def calcular_total_ventas():
     total_ventas_df = pd.read_csv(ruta_csv,usecols=['unidades','precio_unitario'])
@@ -15,7 +21,7 @@ def calcular_total_ventas():
     for index,row in total_ventas_df.iterrows():
         total_por_producto = int(row['unidades']) * float(row['precio_unitario'])
         total_ventas += total_por_producto
-        total_formateado = "{:,}".format(total_ventas)
+        total_formateado = locale.format_string("%.2f", total_ventas, grouping=True)
 
     print(f'Importe total de ventas: {total_formateado}€')
 
@@ -44,12 +50,42 @@ def calcular_ventas_categoria(nombre_categoria):
         if row['categoria'] == nombre_categoria:
             total_ventas_categoria += int(row['unidades']) * float(row['precio_unitario'])
             total_ventas_categoria = round(total_ventas_categoria,2)
-            ventas_categoria_formateado = "{:,}".format(total_ventas_categoria)
+            ventas_categoria_formateado = locale.format_string("%.2f", total_ventas_categoria, grouping=True)
         else:
             pass
     print(f'Total de ventas de la categoria {nombre_categoria}: {ventas_categoria_formateado}€')
 
     registrar_consulta(tipo_consulta='Ventas por categoria')
+
+def mostrar_registro_consultas():
+    df = pd.read_parquet('datos/consultas.parquet')
+
+    print('\n\nREGISTRO DE CONSULTAS')
+    tipo_consulta = input('¿Qué tipo de consulta te gustaría hacer?\n\n'
+                          '1. Últimas cinco consultas realizadas\n'
+                          '2. Consultas por usuario\n'
+                          '3. Todas las consultas\n\n'
+                          'Escribe tu elección: ')
+    if tipo_consulta == '1':
+        print(df.tail())
+
+    elif tipo_consulta == '2':
+        usuario_elegido = input('Escribe el nombre del usuario para recoger sus consultas: ').title()
+        usuario_df = df[df['usuario']== usuario_elegido]
+
+        if usuario_df.empty:
+            print(f'No hay registros con el nombre {usuario_elegido}')
+        else:
+            print(f'Mostrando todos los registros del usuario {usuario_elegido}')
+            print(usuario_df)
+
+    elif tipo_consulta == '3':
+        print(df)
+    else:
+        print('ERROR: Elección inválida. Intenta de nuevo.\n\n')
+        mostrar_registro_consultas()
+
+    registrar_consulta(tipo_consulta='Registro de consultas')
 
 def registrar_consulta(tipo_consulta):
 

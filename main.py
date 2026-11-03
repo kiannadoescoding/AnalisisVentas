@@ -27,6 +27,4 @@ else:
 
 if __name__ == "__main__":
     iniciar_consulta()
-    # df = pd.read_parquet('datos/consultas.parquet')
-    # print(df)
 

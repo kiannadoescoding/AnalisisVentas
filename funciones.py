@@ -1,4 +1,5 @@
-from lectura import calcular_total_ventas, calcular_unidades_categoria, calcular_ventas_categoria
+from lectura import calcular_total_ventas, calcular_unidades_categoria, calcular_ventas_categoria, \
+    mostrar_registro_consultas
 
 nombre_usuario = []
 numero_consultas = 0
@@ -14,18 +15,23 @@ def iniciar_consulta():
     else:
         pass
 
-    eleccion_consulta = input(
+    eleccion_consulta = str(input(
         f'¿Qué tipo de consulta deseas realizar?\n\n'
         f'Elige uno:\n'
         f'1. Importe total vendido\n'
         f'2. Número de unidades por categoria\n'
-        f'3. Ventas por categoría\n\n'
+        f'3. Ventas por categoría\n'
+        f'4. Registro de consultas\n\n'
         f'Introduce tu elección: '
-        )
+        ))
 
     if eleccion_consulta == '1':
         numero_consultas += 1
         calcular_total_ventas()
+
+    elif eleccion_consulta == '4':
+        numero_consultas += 1
+        mostrar_registro_consultas()
 
     elif eleccion_consulta == '2' or '3':
         numero_consultas += 1
@@ -43,13 +49,13 @@ def continuar_sesion():
 
         if decision_usuario in ('si','sí'):
             iniciar_consulta()
+            continue
 
         elif decision_usuario == 'no':
             print('¡Hasta luego!')
-            break
+            return False
 
-        else:
-            print('ERROR: Intenta de nuevo\n\n')
+    print('ERROR: Intenta de nuevo\n\n')
 
 def elegir_categoria(eleccion_consulta):
     categoria_elegida = input('\nElige una categoria:\n\n'
