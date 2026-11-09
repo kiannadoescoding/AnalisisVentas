@@ -12,9 +12,6 @@ def iniciar_consulta():
         nombre_usuario.append(nombre_usuario_actual)
         print('Hola,', nombre_usuario[0])
 
-    else:
-        pass
-
     eleccion_consulta = str(input(
         f'¿Qué tipo de consulta deseas realizar?\n\n'
         f'Elige uno:\n'
@@ -30,12 +27,23 @@ def iniciar_consulta():
         calcular_total_ventas()
 
     elif eleccion_consulta == '4':
-        numero_consultas += 1
-        mostrar_registro_consultas()
+        print('\n\nREGISTRO DE CONSULTAS')
+        tipo_consulta_registro = input('¿Qué tipo de consulta te gustaría hacer?\n\n'
+                                       '1. Últimas cinco consultas realizadas\n'
+                                       '2. Consultas por usuario\n'
+                                       '3. Todas las consultas\n\n'
+                                       'Escribe tu elección: ')
+        if tipo_consulta_registro == "1" or "2" or "3":
+            numero_consultas += 1
+            mostrar_registro_consultas(tipo_consulta_registro)
+        else:
+            print('ERROR: Intenta de nuevo\n\n')
+            iniciar_consulta()
+
 
     elif eleccion_consulta == '2' or '3':
         numero_consultas += 1
-        elegir_categoria(eleccion_consulta)
+        asignar_categoria(eleccion_consulta)
 
     else:
             print('ERROR: Elección inválida. Intenta de nuevo.\n\n')
@@ -51,13 +59,20 @@ def continuar_sesion():
             iniciar_consulta()
             continue
 
-        elif decision_usuario == 'no':
+        if decision_usuario == 'no':
             print('¡Hasta luego!')
-            return False
+            return
 
-    print('ERROR: Intenta de nuevo\n\n')
+        print('ERROR: Intenta de nuevo\n\n')
 
-def elegir_categoria(eleccion_consulta):
+def asignar_categoria(eleccion_consulta):
+    categorias_dict = {
+        '1': 'Electrónica',
+        '2': 'Hogar',
+        '3': 'Alimentación',
+        '4': 'Deportes',
+        '5': 'Ropa',
+    }
     categoria_elegida = input('\nElige una categoria:\n\n'
                               '1. Electrónica\n'
                               '2. Hogar\n'
@@ -66,25 +81,13 @@ def elegir_categoria(eleccion_consulta):
                               '5. Ropa\n\n'
                               'Introduce el número: ')
 
-    categorias = ['1','2','3','4','5']
-    if categoria_elegida in categorias:
-        asignar_categoria(categoria_elegida, eleccion_consulta)
+    if categoria_elegida in categorias_dict:
+        nombre_categoria = categorias_dict[categoria_elegida]
+
+        if eleccion_consulta == '2':
+            calcular_unidades_categoria(nombre_categoria)
+        elif eleccion_consulta == '3':
+            calcular_ventas_categoria(nombre_categoria)
     else:
         print('ERROR: Categoria no existe. Intenta de nuevo.')
-        elegir_categoria(eleccion_consulta)
-
-def asignar_categoria(categoria_elegida,eleccion_consulta):
-    categorias_dict = {
-        '1': 'Electrónica',
-        '2': 'Hogar',
-        '3': 'Alimentación',
-        '4': 'Deportes',
-        '5': 'Ropa',
-    }
-
-    nombre_categoria = categorias_dict[categoria_elegida]
-
-    if eleccion_consulta == '2':
-        calcular_unidades_categoria(nombre_categoria)
-    elif eleccion_consulta == '3':
-        calcular_ventas_categoria(nombre_categoria)
+        asignar_categoria(eleccion_consulta)

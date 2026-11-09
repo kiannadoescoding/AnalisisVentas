@@ -1,11 +1,8 @@
-from pprint import pprint
-
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 from datetime import datetime
 import locale
-
 from pathlib import Path
 
 ruta_csv = Path(__file__).parent/"datos"/"ventas.csv"
@@ -57,19 +54,13 @@ def calcular_ventas_categoria(nombre_categoria):
 
     registrar_consulta(tipo_consulta='Ventas por categoria')
 
-def mostrar_registro_consultas():
+def mostrar_registro_consultas(tipo_consulta_registro):
     df = pd.read_parquet('datos/consultas.parquet')
 
-    print('\n\nREGISTRO DE CONSULTAS')
-    tipo_consulta = input('¿Qué tipo de consulta te gustaría hacer?\n\n'
-                          '1. Últimas cinco consultas realizadas\n'
-                          '2. Consultas por usuario\n'
-                          '3. Todas las consultas\n\n'
-                          'Escribe tu elección: ')
-    if tipo_consulta == '1':
+    if tipo_consulta_registro == '1':
         print(df.tail())
 
-    elif tipo_consulta == '2':
+    elif tipo_consulta_registro == '2':
         usuario_elegido = input('Escribe el nombre del usuario para recoger sus consultas: ').title()
         usuario_df = df[df['usuario']== usuario_elegido]
 
@@ -79,7 +70,7 @@ def mostrar_registro_consultas():
             print(f'Mostrando todos los registros del usuario {usuario_elegido}')
             print(usuario_df)
 
-    elif tipo_consulta == '3':
+    elif tipo_consulta_registro == '3':
         print(df)
     else:
         print('ERROR: Elección inválida. Intenta de nuevo.\n\n')
