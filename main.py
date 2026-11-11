@@ -10,17 +10,26 @@ from lectura import ruta_parquet
 
 
 if __name__ == "__main__":
-    if not os.path.exists(ruta_parquet):
-        datos_iniciales = {
-            'fecha': [datetime.now()],
-            'usuario': ['Administrador'],
-            'tipo de consulta': ['Creación del archivo parquet'],
-        }
+    try:
+        if not os.path.exists(ruta_parquet):
+            datos_iniciales = {
+                'fecha': [datetime.now()],
+                'usuario': ['Administrador'],
+                'tipo de consulta': ['Creación del archivo parquet'],
+                'categoria' : ['ejemplo'],
+                'resultado' : [123.456],
+            }
 
-        registro_consultas = pd.DataFrame(datos_iniciales)
-        tabla = pa.Table.from_pandas(registro_consultas)
+            registro_consultas = pd.DataFrame(datos_iniciales)
+            tabla = pa.Table.from_pandas(registro_consultas)
 
-        pq.write_table(tabla, 'datos/consultas.parquet')
+            pq.write_table(tabla, 'datos/consultas.parquet')
 
-    iniciar_consulta()
+        iniciar_consulta()
+
+    except FileNotFoundError:
+        print('Puede que el archivo "consultas.parquet" no se haya creado.'
+              'Si este archivo no se encuentra en la carpeta "datos", créalo y reinicia el programa.')
+    except:
+        print('Algo ha salido mal. Intenta de nuevo')
 

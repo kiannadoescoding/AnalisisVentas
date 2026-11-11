@@ -7,61 +7,66 @@ numero_consultas = 0
 def iniciar_consulta():
     global numero_consultas
 
-    if numero_consultas == 0:
-        nombre_usuario_actual = input('Introduce tu nombre: ').title()
-        nombre_usuario.append(nombre_usuario_actual)
-        print('Hola,', nombre_usuario[0])
+    while True:
+        if numero_consultas == 0:
+            while not nombre_usuario:
+                nombre_usuario_actual = input('Introduce tu nombre: ').title()
 
-    eleccion_consulta = str(input(
-        f'¿Qué tipo de consulta deseas realizar?\n\n'
-        f'Elige uno:\n'
-        f'1. Importe total vendido\n'
-        f'2. Número de unidades por categoria\n'
-        f'3. Ventas por categoría\n'
-        f'4. Registro de consultas\n\n'
-        f'Introduce tu elección: '
-        ))
+                if not nombre_usuario_actual.isalpha():
+                    print('Nombre inválido. Introduce solo caracteres alfabéticos.')
+                else:
+                    nombre_usuario.append(nombre_usuario_actual)
+                    print('Hola,', nombre_usuario[0])
+                    numero_consultas += 1
 
-    if eleccion_consulta == '1':
-        numero_consultas += 1
-        calcular_total_ventas()
+        eleccion_consulta = str(input(
+            f'¿Qué tipo de consulta deseas realizar?\n\n'
+            f'Elige uno:\n'
+            f'1. Importe total vendido\n'
+            f'2. Número de unidades por categoria\n'
+            f'3. Ventas por categoría\n'
+            f'4. Registro de consultas\n\n'
+            f'Introduce tu elección: '
+            ))
 
-    elif eleccion_consulta == '4':
-        print('\n\nREGISTRO DE CONSULTAS')
-        tipo_consulta_registro = input('¿Qué tipo de consulta te gustaría hacer?\n\n'
-                                       '1. Últimas cinco consultas realizadas\n'
-                                       '2. Consultas por usuario\n'
-                                       '3. Todas las consultas\n\n'
-                                       'Escribe tu elección: ')
-        if tipo_consulta_registro == "1" or "2" or "3":
-            numero_consultas += 1
-            mostrar_registro_consultas(tipo_consulta_registro)
+        if eleccion_consulta == '1':
+            calcular_total_ventas()
+            break
+
+        elif eleccion_consulta == '4':
+            print('\n\nREGISTRO DE CONSULTAS')
+            while True:
+                tipo_consulta_registro = input('¿Qué tipo de consulta te gustaría hacer?\n\n'
+                                               '1. Últimas cinco consultas realizadas\n'
+                                               '2. Consultas por usuario\n'
+                                               '3. Todas las consultas\n\n'
+                                               'Escribe tu elección: ')
+
+                if tipo_consulta_registro in ("1", "2", "3"):
+                    mostrar_registro_consultas(tipo_consulta_registro)
+                    break
+
+                print('ERROR: Intenta de nuevo\n\n')
+
+        elif eleccion_consulta in ("2","3"):
+            asignar_categoria(eleccion_consulta)
+            break
+
         else:
-            print('ERROR: Intenta de nuevo\n\n')
-            iniciar_consulta()
-
-
-    elif eleccion_consulta == '2' or '3':
-        numero_consultas += 1
-        asignar_categoria(eleccion_consulta)
-
-    else:
             print('ERROR: Elección inválida. Intenta de nuevo.\n\n')
-            iniciar_consulta()
 
 def continuar_sesion():
     while True:
 
-        decision_usuario = input('\n\n¿Deseas realizar otra consulta? Escribe "sí" o "no" ')
+        decision_usuario = input('\n\n¿Deseas realizar otra consulta? Escribe "sí" o "no": ')
         decision_usuario = decision_usuario.lower().strip()
 
         if decision_usuario in ('si','sí'):
             iniciar_consulta()
-            continue
 
         if decision_usuario == 'no':
             print('¡Hasta luego!')
-            return
+            break
 
         print('ERROR: Intenta de nuevo\n\n')
 

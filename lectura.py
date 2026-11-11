@@ -22,7 +22,7 @@ def calcular_total_ventas():
 
     print(f'Importe total de ventas: {total_formateado}€')
 
-    registrar_consulta(tipo_consulta='Total de ventas')
+    registrar_consulta(tipo_consulta='Total de ventas', categoria='Todas', resultado_calculado=total_ventas)
 
 def calcular_unidades_categoria(nombre_categoria):
     unidades_df = pd.read_csv(ruta_csv,usecols=['categoria','unidades'])
@@ -36,7 +36,7 @@ def calcular_unidades_categoria(nombre_categoria):
             pass
     print(f'Número de unidades en la categoria {nombre_categoria}: {total_unidades}')
 
-    registrar_consulta(tipo_consulta='Unidades por categoria')
+    registrar_consulta(tipo_consulta='Unidades por categoria', categoria=nombre_categoria, resultado_calculado=float(total_unidades))
 
 def calcular_ventas_categoria(nombre_categoria):
     ventas_categoria_df = pd.read_csv(ruta_csv, usecols=['categoria','unidades','precio_unitario'])
@@ -52,7 +52,7 @@ def calcular_ventas_categoria(nombre_categoria):
             pass
     print(f'Total de ventas de la categoria {nombre_categoria}: {ventas_categoria_formateado}€')
 
-    registrar_consulta(tipo_consulta='Ventas por categoria')
+    registrar_consulta(tipo_consulta='Ventas por categoria',categoria=nombre_categoria, resultado_calculado=total_ventas_categoria)
 
 def mostrar_registro_consultas(tipo_consulta_registro):
     df = pd.read_parquet('datos/consultas.parquet')
@@ -72,21 +72,22 @@ def mostrar_registro_consultas(tipo_consulta_registro):
 
     elif tipo_consulta_registro == '3':
         print(df)
-    else:
-        print('ERROR: Elección inválida. Intenta de nuevo.\n\n')
-        mostrar_registro_consultas()
 
-    registrar_consulta(tipo_consulta='Registro de consultas')
+    registrar_consulta(tipo_consulta='Registro de consultas', categoria='N/A', resultado_calculado=0.0)
 
-def registrar_consulta(tipo_consulta):
+def registrar_consulta(tipo_consulta, categoria, resultado_calculado):
 
     from funciones import nombre_usuario, continuar_sesion
     today = datetime.now()
+    today_truncated = today.replace(second=0,microsecond=0)
 
     consulta = pd.DataFrame({
-        "fecha": [today],
+        "fecha": [today_truncated],
         "usuario": [nombre_usuario[0]],
         "tipo de consulta": [tipo_consulta],
+        'categoria': [categoria],
+        'resultado': [resultado_calculado]
+
     })
 
     tabla_existente = pq.read_table(ruta_parquet)
