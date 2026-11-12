@@ -29,73 +29,85 @@ def calcular_total_ventas():
 
     registrar_consulta(tipo_consulta='Total de ventas', categoria='Todas', resultado_calculado=total_ventas)
 
-def calcular_unidades_categoria(categoria_elegida):
+def calcular_unidades_categoria():
+
     unidades_df = pd.read_csv(ruta_csv,usecols=['categoria','unidades'])
     total_unidades = 0
 
     for index, row in unidades_df.iterrows():
-        if row['categoria'] == categoria_elegida:
+        if row['categoria'] == st.session_state['categoria_elegida']:
             total_unidades += int(row['unidades'])
 
     if total_unidades > 0:
 
-        st.write(f'Número de unidades en la categoría {categoria_elegida}: {total_unidades}')
+        st.write(f'Número de unidades en la categoría {st.session_state['categoria_elegida']}: {total_unidades}')
 
-        registrar_consulta(tipo_consulta='Unidades por categoría', categoria=categoria_elegida, resultado_calculado=float(total_unidades))
+        registrar_consulta(tipo_consulta='Unidades por categoría', categoria=st.session_state['categoria_elegida'], resultado_calculado=float(total_unidades))
 
-def calcular_ventas_categoria(categoria_elegida):
-    st.write('TOTAL DE VENTAS POR CATEGORÍA')
-
+def calcular_ventas_categoria():
     ventas_categoria_df = pd.read_csv(ruta_csv, usecols=['categoria','unidades','precio_unitario'])
 
     total_ventas_categoria = 0
     for index, row in ventas_categoria_df.iterrows():
-        if row['categoria'] == categoria_elegida:
+        if row['categoria'] == st.session_state['categoria_elegida']:
             total_ventas_categoria += int(row['unidades']) * float(row['precio_unitario'])
             total_ventas_categoria = round(total_ventas_categoria,2)
             ventas_categoria_formateado = locale.format_string("%.2f", total_ventas_categoria, grouping=True)
 
-    st.write(f'Total de ventas de la categoria {categoria_elegida}: {ventas_categoria_formateado}€')
+    if total_ventas_categoria > 0:
+        st.write(f'Total de ventas de la categoria {st.session_state['categoria_elegida']}: {ventas_categoria_formateado}€')
 
-    registrar_consulta(tipo_consulta='Ventas por categoria',categoria=categoria_elegida, resultado_calculado=total_ventas_categoria)
+        registrar_consulta(tipo_consulta='Ventas por categoria',categoria=st.session_state['categoria_elegida'], resultado_calculado=total_ventas_categoria)
 
-def mostrar_registro_consultas(tipo_consulta_registro):
+def mostrar_registro_consultas():
     df = pd.read_parquet('datos/consultas.parquet')
 
-    if tipo_consulta_registro == '1':
+    if st.session_state['tipo_consulta_registro'] == 'Todas las consultas registradas':
+        st.write('Mostrando todas las consultas registradas')
+        st.dataframe(df)
+
+    if st.session_state['tipo_consulta_registro'] == 'Últimas cinco consultas realizadas':
         st.write('Mostrando las últimas 5 consultas registradas')
         df_tail = df.tail()
         st.dataframe(df_tail)
 
-    elif tipo_consulta_registro == '2':
-        usuario_elegido = st.text_input('Escribe el nombre del usuario para recoger sus consultas: ')
-        usuario_elegido = usuario_elegido.title()
-        usuario_df = df[df['usuario']== usuario_elegido]
+    if st.session_state['tipo_consulta_registro'] == 'Consultas por usuario':
 
-        if usuario_df.empty:
-            st.write(f'No hay registros con el nombre {usuario_elegido}')
+        if 'usuario_elegido' not in st.session_state:
+
+            usuario_elegido = st.text_input('Escribe el nombre del usuario para recoger sus consultas: ')
+            if st.button('Confirmar usuario', key='confirmar_usuario'):
+                if usuario_elegido.strip():
+                    st.session_state['usuario_elegido'] = usuario_elegido.title()
+                    st.rerun()
+
         else:
-            st.write(f'Mostrando todos los registros del usuario {usuario_elegido}')
-            st.dataframe(usuario_df)
+            usuario_df = df[df['usuario'] == st.session_state['usuario_elegido']]
 
-    elif tipo_consulta_registro == '3':
-        st.write('Mostrando todas las consultas registradas')
-        st.dataframe(df)
+            if usuario_df.empty:
+                 st.write(f"No hay registros con el nombre {st.session_state['usuario_elegido']}")
+
+            else:
+                st.write(f"Mostrando todos los registros del usuario {st.session_state['usuario_elegido']}")
+                st.dataframe(usuario_df)
+
+            if st.button('Buscar otro usuario'):
+                del st.session_state['usuario_elegido']
+                st.rerun()
 
     registrar_consulta(tipo_consulta='Registro de consultas', categoria='N/A', resultado_calculado=0.0)
 
 def registrar_consulta(tipo_consulta, categoria, resultado_calculado):
 
-    from funciones import nombre_usuario, continuar_sesion
     today = datetime.now()
     today_truncated = today.replace(second=0,microsecond=0)
 
     consulta = pd.DataFrame({
         "fecha": [today_truncated],
-        "usuario": [nombre_usuario[0]],
+        "usuario": [st.session_state['nombre_usuario']],
         "tipo de consulta": [tipo_consulta],
-        'categoria': [categoria],
-        'resultado': [resultado_calculado]
+        "categoria": [categoria],
+        "resultado" : [resultado_calculado]
 
     })
 
@@ -105,4 +117,3 @@ def registrar_consulta(tipo_consulta, categoria, resultado_calculado):
     tabla_combinada = pa.concat_tables([tabla_existente, tabla_nueva])
 
     pq.write_table(tabla_combinada, ruta_parquet)
-    continuar_sesion()
