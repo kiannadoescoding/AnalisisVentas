@@ -23,7 +23,7 @@ def iniciar_consulta():
             f'¿Qué tipo de consulta deseas realizar?\n\n'
             f'Elige uno:\n'
             f'1. Importe total vendido\n'
-            f'2. Número de unidades por categoria\n'
+            f'2. Número de unidades por categoría\n'
             f'3. Ventas por categoría\n'
             f'4. Registro de consultas\n\n'
             f'Introduce tu elección: '
@@ -78,7 +78,7 @@ def asignar_categoria(eleccion_consulta):
         '4': 'Deportes',
         '5': 'Ropa',
     }
-    categoria_elegida = input('\nElige una categoria:\n\n'
+    categoria_elegida = input('\nElige una categoría:\n\n'
                               '1. Electrónica\n'
                               '2. Hogar\n'
                               '3. Alimentación\n'

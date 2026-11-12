@@ -16,7 +16,7 @@ if __name__ == "__main__":
                 'fecha': [datetime.now()],
                 'usuario': ['Administrador'],
                 'tipo de consulta': ['Creación del archivo parquet'],
-                'categoria' : ['ejemplo'],
+                'categoría' : ['ejemplo'],
                 'resultado' : [123.456],
             }
 

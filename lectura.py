@@ -85,7 +85,7 @@ def registrar_consulta(tipo_consulta, categoria, resultado_calculado):
         "fecha": [today_truncated],
         "usuario": [nombre_usuario[0]],
         "tipo de consulta": [tipo_consulta],
-        'categoria': [categoria],
+        'categoría': [categoria],
         'resultado': [resultado_calculado]
 
     })
