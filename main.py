@@ -5,8 +5,11 @@ import pyarrow as pa
 import pyarrow.parquet as pq
 
 from datetime import datetime
+
 from funciones import iniciar_consulta
 from lectura import ruta_parquet
+
+import streamlit as st
 
 
 if __name__ == "__main__":
@@ -28,8 +31,10 @@ if __name__ == "__main__":
         iniciar_consulta()
 
     except FileNotFoundError:
-        print('Puede que el archivo "consultas.parquet" no se haya creado.'
+        st.write('Puede que el archivo "consultas.parquet" no se haya creado.'
               'Si este archivo no se encuentra en la carpeta "datos", créalo y reinicia el programa.')
-    except:
-        print('Algo ha salido mal. Intenta de nuevo')
+
+    # except Exception as e:
+    #     st.error(f"Ha ocurrido un error: {e}")
+    #     st.exception(e)
 

@@ -1,59 +1,67 @@
+import streamlit as st
+
 from lectura import calcular_total_ventas, calcular_unidades_categoria, calcular_ventas_categoria, \
     mostrar_registro_consultas
 
 nombre_usuario = []
-numero_consultas = 0
 
 def iniciar_consulta():
-    global numero_consultas
+    st.write('CONSULTA DE VENTAS')
+    if 'stage' not in st.session_state:
+        st.session_state.stage = 0
 
-    while True:
-        if numero_consultas == 0:
-            while not nombre_usuario:
-                nombre_usuario_actual = input('Introduce tu nombre: ').title()
+    def set_state(i):
+        st.session_state.stage = i
 
-                if not nombre_usuario_actual.isalpha():
-                    print('Nombre inválido. Introduce solo caracteres alfabéticos.')
-                else:
-                    nombre_usuario.append(nombre_usuario_actual)
-                    print('Hola,', nombre_usuario[0])
-                    numero_consultas += 1
+    if st.session_state.stage == 0:
+        st.button('Empezar', on_click=set_state, args=[1])
 
-        eleccion_consulta = str(input(
-            f'¿Qué tipo de consulta deseas realizar?\n\n'
-            f'Elige uno:\n'
-            f'1. Importe total vendido\n'
-            f'2. Número de unidades por categoria\n'
-            f'3. Ventas por categoría\n'
-            f'4. Registro de consultas\n\n'
-            f'Introduce tu elección: '
-            ))
+    if st.session_state.stage == 1:
+        with st.form("formulario_nombre"):
+            nombre_introducido = st.text_input("¿Cuál es tu nombre?")
+            guardado = st.form_submit_button("Guardar")
 
-        if eleccion_consulta == '1':
-            calcular_total_ventas()
-            break
+        if guardado and nombre_introducido.strip():
+            nombre_usuario.append(nombre_introducido)
+            st.session_state["nombre_usuario"] = nombre_introducido.strip()
+            st.session_state.stage = 2
+            st.rerun()
 
-        elif eleccion_consulta == '4':
-            print('\n\nREGISTRO DE CONSULTAS')
-            while True:
-                tipo_consulta_registro = input('¿Qué tipo de consulta te gustaría hacer?\n\n'
-                                               '1. Últimas cinco consultas realizadas\n'
-                                               '2. Consultas por usuario\n'
-                                               '3. Todas las consultas\n\n'
-                                               'Escribe tu elección: ')
+    if st.session_state.stage == 2:
+        st.write(f"¡Hola, **{st.session_state['nombre_usuario']}**!")
+        eleccion_consulta = st.menu_button("¿Qué tipo de consulta deseas realizar?", options=
+        ['Importe total vendido',
+         'Número de unidades por categoría',
+         'Ventas por categoría',
+         'Registro de consultas',
+         ])
+        if eleccion_consulta:
+            confirmar_consulta(eleccion_consulta)
 
-                if tipo_consulta_registro in ("1", "2", "3"):
-                    mostrar_registro_consultas(tipo_consulta_registro)
-                    break
+        if eleccion_consulta is None:
+            set_state(2)
 
-                print('ERROR: Intenta de nuevo\n\n')
+    if st.session_state.stage == 3:
+        st.button('Realizar otra consulta', on_click=set_state, args=[0])
 
-        elif eleccion_consulta in ("2","3"):
-            asignar_categoria(eleccion_consulta)
-            break
 
-        else:
-            print('ERROR: Elección inválida. Intenta de nuevo.\n\n')
+def confirmar_consulta(eleccion_consulta):
+    if eleccion_consulta == 'Importe total vendido':
+        calcular_total_ventas()
+
+    elif eleccion_consulta == 'Registro de consultas':
+        st.write('REGISTRO DE CONSULTAS')
+        tipo_consulta_registro = st.selectbox('¿Qué tipo de consulta te gustaría hacer?', options=
+                                               ['Últimas cinco consultas realizadas',
+                                               'Consultas por usuario',
+                                               'Todas las consultas']
+                                                )
+
+        mostrar_registro_consultas(tipo_consulta_registro)
+
+    elif eleccion_consulta in ("Número de unidades por categoría","Ventas por categoría"):
+        asignar_categoria(eleccion_consulta)
+
 
 def continuar_sesion():
     while True:
@@ -71,28 +79,30 @@ def continuar_sesion():
         print('ERROR: Intenta de nuevo\n\n')
 
 def asignar_categoria(eleccion_consulta):
-    categorias_dict = {
-        '1': 'Electrónica',
-        '2': 'Hogar',
-        '3': 'Alimentación',
-        '4': 'Deportes',
-        '5': 'Ropa',
-    }
-    categoria_elegida = input('\nElige una categoria:\n\n'
-                              '1. Electrónica\n'
-                              '2. Hogar\n'
-                              '3. Alimentación\n'
-                              '4. Deportes\n'
-                              '5. Ropa\n\n'
-                              'Introduce el número: ')
 
-    if categoria_elegida in categorias_dict:
-        nombre_categoria = categorias_dict[categoria_elegida]
+    categoria_elegida = st.selectbox('CATEGORÍAS:', options=[
+        'Electrónica',
+        'Hogar',
+        'Alimentación',
+        'Deportes',
+        'Ropa'],
+    index = None,
+    placeholder = 'Selecciona una categoría...'
+    )
+    if st.button('Confirmar categoría'):
 
-        if eleccion_consulta == '2':
-            calcular_unidades_categoria(nombre_categoria)
-        elif eleccion_consulta == '3':
-            calcular_ventas_categoria(nombre_categoria)
-    else:
-        print('ERROR: Categoria no existe. Intenta de nuevo.')
-        asignar_categoria(eleccion_consulta)
+        if categoria_elegida is None:
+            st.warning('Por favor, selecciona una categoría.')
+
+        elif eleccion_consulta == 'Número de unidades por categoría':
+            calcular_unidades_categoria(categoria_elegida)
+
+        elif eleccion_consulta == 'Ventas por categoría':
+            calcular_ventas_categoria(categoria_elegida)
+
+    if categoria_elegida is not None:
+        st.write(f'Categoría elegida: {categoria_elegida}')
+        if eleccion_consulta == 'Número de unidades por categoría':
+            calcular_unidades_categoria(categoria_elegida)
+        elif eleccion_consulta == 'Ventas por categoría':
+            calcular_ventas_categoria(categoria_elegida)
