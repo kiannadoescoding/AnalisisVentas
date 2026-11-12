@@ -100,13 +100,13 @@ def mostrar_registro_consultas():
 def registrar_consulta(tipo_consulta, categoria, resultado_calculado):
 
     today = datetime.now()
-    today_truncated = today.replace(second=0,microsecond=0)
+    today_truncated = today.replace(microsecond=0)
 
     consulta = pd.DataFrame({
         "fecha": [today_truncated],
         "usuario": [st.session_state['nombre_usuario']],
         "tipo de consulta": [tipo_consulta],
-        "categoria": [categoria],
+        "categoría": [categoria],
         "resultado" : [resultado_calculado]
 
     })
