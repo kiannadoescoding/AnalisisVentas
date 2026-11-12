@@ -34,7 +34,7 @@ if __name__ == "__main__":
         st.write('Puede que el archivo "consultas.parquet" no se haya creado.'
               'Si este archivo no se encuentra en la carpeta "datos", créalo y reinicia el programa.')
 
-    # except Exception as e:
-    #     st.error(f"Ha ocurrido un error: {e}")
-    #     st.exception(e)
+    except Exception as e:
+        st.error(f"Ha ocurrido un error: {e}")
+        st.exception(e)
 
