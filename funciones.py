@@ -31,11 +31,11 @@ def iniciar_consulta():
 
         if eleccion_consulta == '1':
             calcular_total_ventas()
-            break
 
         elif eleccion_consulta == '4':
             print('\n\nREGISTRO DE CONSULTAS')
-            while True:
+            menu_registro = True
+            while menu_registro:
                 tipo_consulta_registro = input('¿Qué tipo de consulta te gustaría hacer?\n\n'
                                                '1. Últimas cinco consultas realizadas\n'
                                                '2. Consultas por usuario\n'
@@ -44,16 +44,20 @@ def iniciar_consulta():
 
                 if tipo_consulta_registro in ("1", "2", "3"):
                     mostrar_registro_consultas(tipo_consulta_registro)
-                    break
+                    menu_registro = False
 
-                print('ERROR: Intenta de nuevo\n\n')
+                else:
+                    print('ERROR: Intenta de nuevo\n\n')
 
         elif eleccion_consulta in ("2","3"):
             asignar_categoria(eleccion_consulta)
-            break
 
         else:
             print('ERROR: Elección inválida. Intenta de nuevo.\n\n')
+            continue
+
+        if not continuar_sesion():
+            break
 
 def continuar_sesion():
     while True:
@@ -61,14 +65,15 @@ def continuar_sesion():
         decision_usuario = input('\n\n¿Deseas realizar otra consulta? Escribe "sí" o "no": ')
         decision_usuario = decision_usuario.lower().strip()
 
-        if decision_usuario in ('si','sí'):
-            iniciar_consulta()
+        if decision_usuario == 'si':
+            return True
 
-        if decision_usuario == 'no':
+        elif decision_usuario == 'no':
             print('¡Hasta luego!')
-            break
+            return False
 
-        print('ERROR: Intenta de nuevo\n\n')
+        else:
+            print('ERROR: Intenta de nuevo\n\n')
 
 def asignar_categoria(eleccion_consulta):
     categorias_dict = {

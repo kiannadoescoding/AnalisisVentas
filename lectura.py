@@ -77,7 +77,7 @@ def mostrar_registro_consultas(tipo_consulta_registro):
 
 def registrar_consulta(tipo_consulta, categoria, resultado_calculado):
 
-    from funciones import nombre_usuario, continuar_sesion
+    from funciones import nombre_usuario
     today = datetime.now()
     today_truncated = today.replace(second=0,microsecond=0)
 
@@ -96,4 +96,3 @@ def registrar_consulta(tipo_consulta, categoria, resultado_calculado):
     tabla_combinada = pa.concat_tables([tabla_existente, tabla_nueva])
 
     pq.write_table(tabla_combinada, ruta_parquet)
-    continuar_sesion()
