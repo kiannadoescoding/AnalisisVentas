@@ -78,7 +78,7 @@ def mostrar_registro_consultas():
             usuario_elegido = st.text_input('Escribe el nombre del usuario para recoger sus consultas: ')
             if st.button('Confirmar usuario', key='confirmar_usuario'):
                 if usuario_elegido.strip():
-                    st.session_state['usuario_elegido'] = usuario_elegido.title()
+                    st.session_state['usuario_elegido'] = usuario_elegido.title().strip()
                     st.rerun()
 
         else:
